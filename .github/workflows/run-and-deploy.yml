@@ -31,6 +31,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Restore pricing.db from cache
+        id: cache-restore-db
+        uses: actions/cache/restore@v4
+        with:
+          path: pricing.db
+          key: pricing-db-${{ runner.os }}-primary
+          restore-keys: |
+            pricing-db-${{ runner.os }}-
+
       - name: Set dynamic dates (today+X → today+Y)
         env:
           START_OFFSET: ${{ github.event.inputs.start_offset }}
@@ -50,6 +59,14 @@ jobs:
       - name: Build reports index
         run: |
           python3 scripts/make_reports_index.py
+
+      - name: Save updated pricing.db to cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: pricing.db
+          key: pricing-db-${{ runner.os }}-${{ github.run_id }}
+          retention-days: 30
 
       - name: Upload artifact (reports and DB)
         uses: actions/upload-artifact@v4

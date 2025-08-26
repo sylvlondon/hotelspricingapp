@@ -97,6 +97,7 @@ CI (GitHub Actions + Pages)
 -  - Executes the parallel fetch and report generation.
 -  - Builds `reports/index.html` and deploys the `reports/` folder to GitHub Pages.
 -  - Uploads `reports/`, `pricing.db`, and CSVs as a build artifact.
+ -  - Persists `pricing.db` across runs using Actions Cache (restore before run, save after run). Retention: 30 days.
 
 Enable Pages
 - In GitHub Settings → Pages, set Source to “GitHub Actions”. The workflow included here handles deploy.
