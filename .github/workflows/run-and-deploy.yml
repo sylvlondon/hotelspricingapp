@@ -6,11 +6,11 @@ on:
       start_offset:
         description: "Start offset in days (today + X)"
         required: false
-        default: '1'
+        default: '2'
       end_offset:
         description: "End offset in days (today + Y)"
         required: false
-        default: '15'
+        default: '90'
   schedule:
     - cron: '0 3 */3 * *'  # every 3 days at 03:00 UTC
 
