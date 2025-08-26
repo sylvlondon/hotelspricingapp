@@ -1,0 +1,2 @@
+Crée un fichier ./TEST_OK.txt contenant le texte EXACT: 'HELLO FROM CODEX'.
+Réponds uniquement par: DONE

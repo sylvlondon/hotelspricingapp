@@ -1,0 +1,82 @@
+{
+  "db_path": "pricing.db",
+  "report_dir": "reports",
+  "runs": {
+    "start_date": "2025-08-27",
+    "end_date": "2025-09-10",
+    "lookback_runs": 3,
+    "lookback_days_avg": 5
+  },
+  "fetch": {
+    "currency": "EUR",
+    "adults": 2,
+    "rooms": 1,
+    "sleep_seconds": 1,
+    "parallelism": 7
+  },
+  "spike": {
+    "levels": {
+      "low": 0.1,
+      "medium": 0.2,
+      "high": 0.3
+    },
+    "rules": {
+      "compare_recent_runs": true,
+      "compare_trailing_day_avg": true
+    }
+  },
+  "hotels": [
+    {
+      "name": "Renaissance",
+      "key": "g187079-d23257818"
+    },
+    {
+      "name": "Mercure Chartrons",
+      "key": "g187079-d196934"
+    },
+    {
+      "name": "Seeko",
+      "key": "g187079-d678657"
+    },
+    {
+      "name": "Mercure gare",
+      "key": "g187079-d23547343"
+    },
+    {
+      "name": "Hilton",
+      "key": "g187079-d14504725"
+    },
+    {
+      "name": "Marty",
+      "key": "g187079-d228746"
+    },
+    {
+      "name": "Radisson blue",
+      "key": "g187079-d15080462"
+    },
+    {
+      "name": "Hotel 56",
+      "key": "g187079-d32609706"
+    },
+    {
+      "name": "Novotel",
+      "key": "g187079-d196936"
+    },
+    {
+      "name": "Quality",
+      "key": "g187079-d196932"
+    },
+    {
+      "name": "Meninger",
+      "key": "g187079-d23283846"
+    },
+    {
+      "name": "Mamashelter",
+      "key": "g187079-d4763234"
+    },
+    {
+      "name": "Moxy",
+      "key": "g187079-d23257828"
+    }
+  ]
+}

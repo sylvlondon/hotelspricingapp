@@ -1,0 +1,74 @@
+name: Fetch Rates, Build Report, Deploy Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_offset:
+        description: "Start offset in days (today + X)"
+        required: false
+        default: '1'
+      end_offset:
+        description: "End offset in days (today + Y)"
+        required: false
+        default: '15'
+  schedule:
+    - cron: '0 3 * * *'  # daily at 03:00 UTC
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set dynamic dates (today+X → today+Y)
+        env:
+          START_OFFSET: ${{ github.event.inputs.start_offset }}
+          END_OFFSET: ${{ github.event.inputs.end_offset }}
+        run: |
+          SO="${START_OFFSET:-1}"
+          EO="${END_OFFSET:-15}"
+          echo "Using offsets: start=+$SO days, end=+$EO days"
+          python3 scripts/update_config_dates.py --config config.json --start-offset "$SO" --end-offset "$EO"
+
+      - name: Run fetch and report
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          bash run_parallel_and_report.sh -c config.json
+
+      - name: Build reports index
+        run: |
+          python3 scripts/make_reports_index.py
+
+      - name: Upload artifact (reports and DB)
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-and-db
+          path: |
+            reports/**
+            pricing.db
+            outputprice_debug.csv
+            outputprice.csv
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: reports
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
