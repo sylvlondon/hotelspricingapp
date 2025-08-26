@@ -92,7 +92,7 @@ Notes
 
 CI (GitHub Actions + Pages)
 - Workflow: `.github/workflows/run-and-deploy.yml`
--  - Runs daily at 03:00 UTC and on manual dispatch.
+-  - Runs every 3 days at 03:00 UTC and on manual dispatch.
 -  - Dynamic date window: start = today + 1 day, end = today + 15 days (override when dispatching via inputs `start_offset`, `end_offset`).
 -  - Executes the parallel fetch and report generation.
 -  - Builds `reports/index.html` and deploys the `reports/` folder to GitHub Pages.

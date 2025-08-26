@@ -12,7 +12,7 @@ on:
         required: false
         default: '15'
   schedule:
-    - cron: '0 3 * * *'  # daily at 03:00 UTC
+    - cron: '0 3 */3 * *'  # every 3 days at 03:00 UTC
 
 permissions:
   contents: read
