@@ -81,6 +81,11 @@ def run_fetch_to_db(cfg_path: str, db_path: Optional[str] = None) -> int:
         per_date_counts: Dict[str, int] = {d: 0 for d in dates}
         hotels_count = max(1, len(hotels))
         dates_done = 0
+        # Track per-date threshold printing to avoid spam (25%, 50%, 75%)
+        per_date_thresholds: Dict[str, List[float]] = {d: [0.25, 0.50, 0.75] for d in dates}
+        # Heartbeat for overall progress
+        start_ts = time.time()
+        last_heartbeat = start_ts
 
         print(
             f"Starting parallel fetch: dates={total_dates}, hotels={len(hotels)}, tasks={total_tasks}, pool={parallelism}",
@@ -104,6 +109,20 @@ def run_fetch_to_db(cfg_path: str, db_path: Optional[str] = None) -> int:
 
                 # Update date completion progress
                 per_date_counts[date] += 1
+                # Print per-date partial progress at thresholds
+                ratio = per_date_counts[date] / hotels_count
+                # Print early start signal for the date
+                if per_date_counts[date] == 1 and hotels_count > 1:
+                    ts = datetime.now().strftime('%H:%M:%S')
+                    print(f"[{ts}] Started {date}: 1/{hotels_count} hotels (8%)", flush=True)
+                # Threshold prints (25/50/75%)
+                ths = per_date_thresholds.get(date, [])
+                while ths and ratio >= ths[0]:
+                    pct = int(ths[0] * 100)
+                    ts = datetime.now().strftime('%H:%M:%S')
+                    print(f"[{ts}] In progress {date}: {per_date_counts[date]}/{hotels_count} hotels ({pct}%)", flush=True)
+                    ths.pop(0)
+                per_date_thresholds[date] = ths
                 if per_date_counts[date] == hotels_count:
                     dates_done += 1
                     pct = int((dates_done / total_dates) * 100) if total_dates > 0 else 100
@@ -112,8 +131,12 @@ def run_fetch_to_db(cfg_path: str, db_path: Optional[str] = None) -> int:
 
                 # Optional light heartbeat every ~10% tasks if there are many hotels
                 # (kept minimal to avoid noise when there are few dates)
-                # if processed_tasks % max(1, total_tasks // 10) == 0:
-                #     print(f"Tasks: {processed_tasks}/{total_tasks}", flush=True)
+                now = time.time()
+                if processed_tasks % max(1, total_tasks // 20) == 0 or (now - last_heartbeat) >= 5:
+                    overall_pct = int((processed_tasks / total_tasks) * 100) if total_tasks > 0 else 100
+                    ts = datetime.now().strftime('%H:%M:%S')
+                    print(f"[{ts}] Overall: {processed_tasks}/{total_tasks} tasks ({overall_pct}%)", flush=True)
+                    last_heartbeat = now
 
         return run_id
 
