@@ -46,7 +46,7 @@ jobs:
           END_OFFSET: ${{ github.event.inputs.end_offset }}
         run: |
           SO="${START_OFFSET:-1}"
-          EO="${END_OFFSET:-15}"
+          EO="${END_OFFSET:-90}"
           echo "Using offsets: start=+$SO days, end=+$EO days"
           python3 scripts/update_config_dates.py --config config.json --start-offset "$SO" --end-offset "$EO"
 
